@@ -1,57 +1,69 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import Modal from '$lib/components/Modal.svelte';
+	import * as Card from '$lib/components/ui/card';
 	import type { PageData } from './$types';
+	import { Button } from '$lib/components/ui/button';
+	import { Trash2Icon } from 'svelte-feather-icons';
+	import Badge from '$lib/components/ui/badge/badge.svelte';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import Input from '$lib/components/ui/input/input.svelte';
 
 	export let data: PageData;
-
-	let showModal = false;
-
 </script>
 
 <h1>Domains</h1>
 
-<button on:click={() => (showModal = true)}>Create new domain</button>
-
-<Modal bind:showModal>
-	<h2 slot="header">Create new domain</h2>
-	<form class="modal" method="POST" action="?/create" use:enhance>
-		<label for="name">Domain name:</label>
-		<input type="text" name="name" id="name" />
-		<label for="responsible">Responsible:</label>
-		<input type="text" name="responsible" id="responsible" />
-		<label for="teams">Teams:</label>
-		<select name="teams" id="teams" multiple>
-			{#each data.teams as team}
-				<option value={team}>{team}</option>
-			{/each}
-		</select>
-		<input type="submit" value="Create new domain" />
-	</form>
-</Modal>
+<Dialog.Root>
+	<Dialog.Trigger>Open</Dialog.Trigger>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Create new domain</Dialog.Title>
+			<Dialog.Description>
+				<form class="modal" method="POST" action="?/create" use:enhance>
+					<label for="name">Domain name:</label>
+					<Input type="text" name="name" id="name" />
+					<label for="responsible">Responsible:</label>
+					<Input type="text" name="responsible" id="responsible" />
+					<Button type="submit">Create new domain</Button>
+				</form>
+			</Dialog.Description>
+		</Dialog.Header>
+	</Dialog.Content>
+</Dialog.Root>
 
 {#await data.domains}
 	<p>loading...</p>
 {:then domains}
 	<div>
 		{#each domains as domain}
-			<form class="card" method="POST" action={`?/remove`} use:enhance>
-				<p style="font-size: 1.2em;">
-					<b>{domain.domain.charAt(0).toLocaleUpperCase() + domain.domain.slice(1)}</b>
-				</p>
-				<p>Administrators: {domain.responsible.charAt(0).toLocaleUpperCase() + domain.responsible.slice(1)}</p>
-				<p>Teams:</p>
-				<ul>
-					{#each domain.teams as team}
-						<li>{team}</li>
-					{/each}
-				</ul>
-				<input type="hidden" name="name" value={domain.domain} />
-				<input
-					style="color: var(--secondary-color); font-size: 1em; background-color: transparent; border: none; position: absolute; right: 1.6em; top: 1.6em;"
-					type="submit"
-					value="Delete"
-				/>
+			<form method="POST" action={`?/remove`} use:enhance>
+				<Card.Root class="w-80">
+					<Card.CardHeader>
+						<Card.Title>
+							{domain.domain.charAt(0).toLocaleUpperCase() + domain.domain.slice(1)}
+						</Card.Title>
+						<Card.Description>
+							<Badge variant="secondary">
+								Administrators: {domain.responsible.charAt(0).toLocaleUpperCase() +
+									domain.responsible.slice(1)}
+							</Badge>
+						</Card.Description>
+					</Card.CardHeader>
+					<Card.Content>
+						<p>Teams:</p>
+						<ul>
+							{#each domain.teams as team}
+								<li>{team}</li>
+							{/each}
+						</ul>
+						<input type="hidden" name="name" value={domain.domain} />
+					</Card.Content>
+					<Card.Footer class="justify-end">
+						<Button variant="ghost" type="submit" size="icon">
+							<Trash2Icon size="16" />
+						</Button>
+					</Card.Footer>
+				</Card.Root>
 			</form>
 		{/each}
 	</div>
@@ -72,24 +84,5 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1em;
-	}
-
-	.card {
-		display: flex;
-		width: 20em;
-		flex-direction: column;
-		position: relative;
-		align-items: baseline;
-		border-radius: 0.5em;
-		padding: 1em 1.4em;
-		border: 1px solid var(--light-color);
-	}
-
-	p {
-		line-height: 0;
-	}
-
-	input[type='submit'] {
-		cursor: pointer;
 	}
 </style>
