@@ -8,6 +8,7 @@
 	<Button variant="link" href="/">Home</Button>
 	<Button variant="link" href="/domains">Domains</Button>
 	<Button variant="link" href="/teams">Teams</Button>
+	<Button variant="link" href="/events">Events</Button>
 </nav>
 <slot />
 

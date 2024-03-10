@@ -50,8 +50,8 @@
 	nav {
 		display: flex;
 		flex-direction: column;
-		justify-content: start;
-		align-items: start;
+		justify-content: flex-start;
+		align-items: flex-start;
 		gap: 0.5em;
 		padding: 1em;
 		margin: 1em;
@@ -67,7 +67,7 @@
 	section {
 		display: flex;
 		flex-direction: column;
-		align-items: start;
+		align-items: flex-start;
 		gap: 1em;
 		padding: 1em;
 	}
@@ -76,7 +76,7 @@
 		display: flex;
 		padding-left: 1em;
 		flex-direction: column;
-		align-items: start;
+		align-items: flex-start;
 		gap: 0.5em;
 	}
 

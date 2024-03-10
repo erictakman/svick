@@ -1,8 +1,12 @@
+<script lang="ts">
+
+</script>
+
 <main>
 	<h1>Welcome to Meshbase</h1>
 </main>
 
-<style>
+<style >
 	main {
 		height: 100%;
 		display: flex;

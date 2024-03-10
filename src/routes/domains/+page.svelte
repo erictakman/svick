@@ -3,15 +3,40 @@
 	import * as Card from '$lib/components/ui/card';
 	import type { PageData } from './$types';
 	import { Button } from '$lib/components/ui/button';
-	import { Trash2Icon } from 'svelte-feather-icons';
+	import { CheckIcon, ChevronDownIcon, Trash2Icon } from 'svelte-feather-icons';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import Input from '$lib/components/ui/input/input.svelte';
+	import { Icon, ArrowUp, Trash } from "svelte-hero-icons";
+
+	import { createSelect, melt } from '@melt-ui/svelte';
+	import Label from '$lib/components/melts/label.svelte';
+	// import DialogTitle from '$lib/components/ui/dialog/dialog-title.svelte';
+	import DialogTitle from '$lib/components/melts/dialog/dialog-content.svelte';
+
+	const {
+		elements: { trigger, menu, option, group, groupLabel, label },
+		states: { selectedLabel, open },
+		helpers: { isSelected }
+	} = createSelect({
+		forceVisible: true,
+		positioning: {
+			placement: 'bottom',
+			fitViewport: true,
+			sameWidth: true
+		},
+		multiple: true,
+		name: 'teams'
+	});
 
 	export let data: PageData;
 </script>
 
 <h1>Domains</h1>
+
+<Label />
+
+<DialogTitle />
 
 <Dialog.Root>
 	<Dialog.Trigger>Open</Dialog.Trigger>
@@ -24,6 +49,29 @@
 					<Input type="text" name="name" id="name" />
 					<label for="responsible">Responsible:</label>
 					<Input type="text" name="responsible" id="responsible" />
+					<label use:melt={$label} for="meat" class="cursor-pointer relative">Teams</label>
+					<button use:melt={$trigger} aria-label="Teams">
+						{$selectedLabel || 'Select teams'}
+						<ChevronDownIcon size="16" />
+					</button>
+					{#if $open}
+						<div
+							use:melt={$menu}
+							class="z-10 flex flex-col rounded-lg bg-white p-1 shadow focus:!ring-0"
+						>
+							<div use:melt={$group('teams')} id="teams" class="flex flex-col gap-0">
+								{#each data.teams as team}
+									<div
+										class="relative cursor-pointer rounded-lg leading-3"
+										use:melt={$option({ value: team, label: team })}
+									>
+										<CheckIcon size="12" class="check {$isSelected(team) ? 'block' : 'hidden'}" />
+										{team}
+									</div>
+								{/each}
+							</div>
+						</div>
+					{/if}
 					<Button type="submit">Create new domain</Button>
 				</form>
 			</Dialog.Description>
@@ -60,7 +108,7 @@
 					</Card.Content>
 					<Card.Footer class="justify-end">
 						<Button variant="ghost" type="submit" size="icon">
-							<Trash2Icon size="16" />
+							<Icon src={Trash} micro size={"16px"} />
 						</Button>
 					</Card.Footer>
 				</Card.Root>
@@ -71,18 +119,26 @@
 	<p style="color: red">{error.message}</p>
 {/await}
 
-<style>
+<style lang="postcss">
 	div {
 		margin: 1em 0;
 		display: flex;
 		flex-wrap: wrap;
 		gap: 1em;
-		align-items: start;
+		align-items: flex-start;
 	}
 
 	.modal {
 		display: flex;
 		flex-direction: column;
 		gap: 1em;
+	}
+
+	.check {
+		position: absolute;
+		left: theme(spacing.2);
+		top: 50%;
+		z-index: theme(zIndex.20);
+		translate: 0 calc(-50% + 1px);
 	}
 </style>
